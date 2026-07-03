@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Pagelink - Todos mis enlaces en un solo lugar">
+  <title>Pagelink</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #080808;
+      --bg-card: #141414;
+      --surface: rgba(255, 255, 255, 0.06);
+      --fg: #f5f5f5;
+      --fg-secondary: rgba(255, 255, 255, 0.75);
+      --fg-muted: rgba(255, 255, 255, 0.4);
+      --accent: #f97316;
+      --accent-2: #d946ef;
+      --accent-dark: #c85a10;
+      --accent-gradient: linear-gradient(135deg, #f97316 0%, #ea580c 50%, #dc2626 100%);
+      --accent-gradient-hover: linear-gradient(135deg, #fb923c 0%, #f97316 50%, #ef4444 100%);
+      --border: rgba(255, 255, 255, 0.08);
+      --radius: 14px;
+      --radius-lg: 20px;
+    }
+
+    html {
+      font-size: 16px;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ═══════════════════════════════════════
+       MAIN CONTAINER
+    ═══════════════════════════════════════ */
+    .container {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ═══════════════════════════════════════
+       HERO / PROFILE IMAGE
+    ═══════════════════════════════════════ */
+    .hero {
+      width: calc(100% - 32px);
+      max-width: 420px;
+      aspect-ratio: 4 / 5;
+      margin: 16px auto 0;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      position: relative;
+      background: var(--bg-card);
+      opacity: 0;
+      animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+    }
+
+    .hero-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .hero-placeholder {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(160deg, #1a1a1a 0%, #0d0d0d 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-placeholder-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--accent-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      font-weight: 700;
+      color: white;
+      box-shadow: 0 8px 32px rgba(249, 115, 22, 0.3);
+    }
+
+    /* Gradient overlay at the bottom of hero */
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(to top, rgba(8, 8, 8, 0.95) 0%, rgba(8, 8, 8, 0.4) 50%, transparent 100%);
+      pointer-events: none;
+    }
+
+    /* Name overlay on hero image */
+    .hero-name {
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      z-index: 2;
+      font-family: 'Dancing Script', cursive;
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 2px 20px rgba(0, 0, 0, 0.6);
+      letter-spacing: 0.01em;
+    }
+
+    /* ═══════════════════════════════════════
+       BIO
+    ═══════════════════════════════════════ */
+    .bio {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--fg-secondary);
+      margin: 18px 0 28px;
+      padding: 0 24px;
+      line-height: 1.6;
+      font-weight: 300;
+      opacity: 0;
+      animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+    }
+
+    /* ═══════════════════════════════════════
+       LINK BUTTONS
+    ═══════════════════════════════════════ */
+    .links {
+      width: 100%;
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 36px;
+    }
+
+    .link-btn {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 20px;
+      background: var(--accent-gradient);
+      border: none;
+      border-radius: var(--radius);
+      color: #fff;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+      opacity: 0;
+      animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      box-shadow: 0 4px 16px rgba(249, 115, 22, 0.15);
+    }
+
+    .link-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--accent-gradient-hover);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .link-btn:hover::before {
+      opacity: 1;
+    }
+
+    .link-btn:hover {
+      transform: translateY(-2px) scale(1.015);
+      box-shadow: 0 8px 32px rgba(249, 115, 22, 0.25);
+    }
+
+    .link-btn:active {
+      transform: translateY(0) scale(0.98);
+      transition-duration: 0.1s;
+    }
+
+    /* Staggered animation delays */
+    .link-btn:nth-child(1) { animation-delay: 0.35s; }
+    .link-btn:nth-child(2) { animation-delay: 0.42s; }
+    .link-btn:nth-child(3) { animation-delay: 0.49s; }
+    .link-btn:nth-child(4) { animation-delay: 0.56s; }
+    .link-btn:nth-child(5) { animation-delay: 0.63s; }
+    .link-btn:nth-child(6) { animation-delay: 0.70s; }
+    .link-btn:nth-child(7) { animation-delay: 0.77s; }
+    .link-btn:nth-child(8) { animation-delay: 0.84s; }
+
+    /* Icon */
+    .link-btn-icon {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .link-btn-icon svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    /* Text group */
+    .link-btn-text {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+      padding-right: 36px; /* compensate for icon width to center text */
+    }
+
+    .link-btn-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+
+    .link-btn-subtitle {
+      font-size: 0.72rem;
+      font-weight: 300;
+      opacity: 0.85;
+      margin-top: 1px;
+      font-style: italic;
+    }
+
+    /* ═══════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════ */
+    .footer {
+      font-size: 0.7rem;
+      color: var(--fg-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      opacity: 0;
+      animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.9s forwards;
+    }
+
+    .footer-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    /* ═══════════════════════════════════════
+       ANIMATIONS
+    ═══════════════════════════════════════ */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ═══════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════ */
+    @media (max-width: 480px) {
+      .hero {
+        width: calc(100% - 24px);
+        border-radius: 16px;
+      }
+
+      .hero-name {
+        font-size: 2.4rem;
+      }
+
+      .link-btn {
+        padding: 13px 16px;
+        gap: 12px;
+      }
+
+      .link-btn-icon {
+        width: 32px;
+        height: 32px;
+      }
+
+      .link-btn-icon svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      .link-btn-text {
+        padding-right: 32px;
+      }
+
+      .link-btn-title {
+        font-size: 0.85rem;
+      }
+
+      .link-btn-subtitle {
+        font-size: 0.7rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Hero Profile Image -->
+    <div class="hero" id="heroSection">
+      <div class="hero-placeholder">
+        <div class="hero-placeholder-icon">P</div>
+      </div>
+      <div class="hero-name" id="displayName">Pagelink</div>
+    </div>
+
+    <!-- Bio -->
+    <p class="bio" id="displayBio">Encuentra todos mis enlaces, aquí 💖</p>
+
+    <!-- Link Buttons -->
+    <div class="links" id="linksContainer">
+      <!-- Rendered by JS -->
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <span class="footer-dot"></span>
+      Pagelink
+    </div>
+  </div>
+
+  <script>
+    // ═══════════════════════════════════════
+    // CONFIGURATION
+    // ═══════════════════════════════════════
+    const CONFIG = {
+      name: 'Pagelink',
+      bio: 'Encuentra todos mis enlaces, aquí 💖',
+      avatarLetter: 'P',
+    };
+
+    const DEFAULT_LINKS = [
+      { label: 'Telegram VIP', subtitle: 'Adelanto de contenido y promos', url: '#' },
+      { label: 'GitHub', subtitle: 'Mis proyectos', url: '#' },
+      { label: 'Instagram', subtitle: 'Mi vida :)', url: '#' },
+      { label: 'Facebook', subtitle: 'Sígueme', url: '#' },
+      { label: 'Twitter / X', subtitle: 'Spicy', url: '#' },
+      { label: 'OnlyFans', subtitle: 'Lo que estás buscando..', url: '#' },
+    ];
+
+    // ═══════════════════════════════════════
+    // ICON MAP
+    // ═══════════════════════════════════════
+    const ICONS = {
+      telegram: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>`,
+      github: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-3.16 19.5c.5.08.66-.23.66-.5v-1.7C6.23 20 5.58 17.94 5.58 17.94c-.43-1.1-1.05-1.4-1.05-1.4-.86-.58.07-.57.07-.57.95.07 1.45 1 1.45 1 .84 1.44 2.2 1.02 2.74.78.08-.6.33-1.02.6-1.26-2.1-.23-4.3-1.05-4.3-4.67 0-1.03.37-1.88.97-2.54-.1-.24-.42-1.2.1-2.5 0 0 .79-.25 2.6.97a9.04 9.04 0 0 1 4.72 0c1.8-1.22 2.6-.97 2.6-.97.52 1.3.2 2.26.1 2.5.6.66.97 1.5.97 2.54 0 3.62-2.2 4.44-4.3 4.67.34.3.64.87.64 1.76v2.6c0 .27.15.58.66.5A10 10 0 0 0 12 2z"/></svg>`,
+      instagram: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>`,
+      facebook: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>`,
+      twitter: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`,
+      onlyfans: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 3a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm0 2a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/></svg>`,
+      tiktok: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1v-3.51a6.37 6.37 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15a6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.68a8.21 8.21 0 0 0 4.76 1.52v-3.4a4.85 4.85 0 0 1-1-.11z"/></svg>`,
+      twitch: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>`,
+      youtube: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`,
+      whatsapp: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.025.507 3.932 1.396 5.608L0 24l6.575-1.344A11.937 11.937 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75c-1.875 0-3.63-.51-5.13-1.398l-.368-.218-3.81.999 1.016-3.713-.24-.378A9.693 9.693 0 0 1 2.25 12 9.75 9.75 0 0 1 12 2.25 9.75 9.75 0 0 1 21.75 12 9.75 9.75 0 0 1 12 21.75z"/></svg>`,
+      link: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`,
+    };
+
+    // ═══════════════════════════════════════
+    // RENDER LINKS
+    // ═══════════════════════════════════════
+    function renderLinks(links) {
+      const container = document.getElementById('linksContainer');
+      container.innerHTML = links.map((link, i) => {
+        const iconKey = Object.keys(ICONS).find(k => link.label.toLowerCase().includes(k));
+        const icon = ICONS[iconKey] || ICONS.link;
+        const subtitleHtml = link.subtitle
+          ? `<span class="link-btn-subtitle">${link.subtitle}</span>`
+          : '';
+        return `
+          <a href="${link.url}" class="link-btn" target="_blank" rel="noopener" style="animation-delay: ${0.35 + i * 0.07}s">
+            <span class="link-btn-icon">${icon}</span>
+            <span class="link-btn-text">
+              <span class="link-btn-title">${link.label}</span>
+              ${subtitleHtml}
+            </span>
+          </a>
+        `;
+      }).join('');
+    }
+
+    // ═══════════════════════════════════════
+    // INIT
+    // ═══════════════════════════════════════
+    renderLinks(DEFAULT_LINKS);
+  </script>
+</body>
+</html>
