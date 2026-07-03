@@ -1,9 +1,15 @@
+/* ═══════════════════════════════════════════════════════════
+   RESET — Elimina márgenes, paddings y box model por defecto
+   ═══════════════════════════════════════════════════════════ */
 *, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   VARIABLES CSS — Colores, fondos, bordes y radios
+   ═══════════════════════════════════════════════════════════ */
 :root {
   --bg: #080808;
   --bg-card: #141414;
@@ -21,6 +27,9 @@
   --radius-lg: 20px;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   BASE — HTML y body
+   ═══════════════════════════════════════════════════════════ */
 html {
   font-size: 16px;
   scroll-behavior: smooth;
@@ -38,6 +47,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   CONTENEDOR PRINCIPAL — Ancho máximo centrado
+   ═══════════════════════════════════════════════════════════ */
 .container {
   width: 100%;
   max-width: 480px;
@@ -46,6 +58,9 @@ body {
   align-items: center;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   HERO — Foto de perfil de fondo + nombre superpuesto
+   ═══════════════════════════════════════════════════════════ */
 .hero {
   width: calc(100% - 32px);
   max-width: 420px;
@@ -59,6 +74,7 @@ body {
   animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
 }
 
+/* Imagen de perfil — cubre todo el hero */
 .hero-img,
 .hero-avatar {
   width: 100%;
@@ -67,6 +83,7 @@ body {
   display: block;
 }
 
+/* Contenedor por defecto (fondo oscuro) mientras carga la imagen */
 .hero-placeholder {
   width: 100%;
   height: 100%;
@@ -76,6 +93,7 @@ body {
   justify-content: center;
 }
 
+/* Ícono de letra inicial (usado si no hay foto) */
 .hero-placeholder-icon {
   width: 80px;
   height: 80px;
@@ -90,6 +108,7 @@ body {
   box-shadow: 0 8px 32px rgba(249, 115, 22, 0.3);
 }
 
+/* Degradado oscuro en la parte inferior del hero para legibilidad del nombre */
 .hero::after {
   content: '';
   position: absolute;
@@ -101,6 +120,7 @@ body {
   pointer-events: none;
 }
 
+/* Nombre del perfil superpuesto sobre la imagen */
 .hero-name {
   position: absolute;
   bottom: 20px;
@@ -116,6 +136,9 @@ body {
   letter-spacing: 0.01em;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   BIO — Descripción corta debajo del nombre
+   ═══════════════════════════════════════════════════════════ */
 .bio {
   text-align: center;
   font-size: 0.85rem;
@@ -128,6 +151,9 @@ body {
   animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   BOTONES DE ENLACES — Lista de redes sociales
+   ═══════════════════════════════════════════════════════════ */
 .links {
   width: 100%;
   padding: 0 16px;
@@ -137,6 +163,7 @@ body {
   margin-bottom: 24px;
 }
 
+/* Cada botón de enlace */
 .link-btn {
   display: flex;
   align-items: center;
@@ -155,6 +182,7 @@ body {
   box-shadow: 0 4px 16px rgba(249, 115, 22, 0.15);
 }
 
+/* Capa hover con gradiente más intenso */
 .link-btn::before {
   content: '';
   position: absolute;
@@ -178,6 +206,7 @@ body {
   transition-duration: 0.1s;
 }
 
+/* Animación escalonada — cada botón aparece con un ligero retraso */
 .link-btn:nth-child(1) { animation-delay: 0.35s; }
 .link-btn:nth-child(2) { animation-delay: 0.42s; }
 .link-btn:nth-child(3) { animation-delay: 0.49s; }
@@ -187,6 +216,7 @@ body {
 .link-btn:nth-child(7) { animation-delay: 0.77s; }
 .link-btn:nth-child(8) { animation-delay: 0.84s; }
 
+/* Contenedor del icono dentro del botón */
 .link-btn-icon {
   width: 36px;
   height: 36px;
@@ -205,6 +235,7 @@ body {
   height: 22px;
 }
 
+/* Bloque de texto del botón (título + subtítulo) */
 .link-btn-text {
   flex: 1;
   display: flex;
@@ -229,6 +260,9 @@ body {
   font-style: italic;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   FOOTER — Marca al final de la página
+   ═══════════════════════════════════════════════════════════ */
 .footer {
   font-size: 0.7rem;
   color: var(--fg-muted);
@@ -249,6 +283,9 @@ body {
   background: var(--accent);
 }
 
+/* ═══════════════════════════════════════════════════════════
+   ANIMACIONES
+   ═══════════════════════════════════════════════════════════ */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
@@ -259,6 +296,9 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE — Ajustes para pantallas pequeñas
+   ═══════════════════════════════════════════════════════════ */
 @media (max-width: 480px) {
   .hero {
     width: calc(100% - 24px);

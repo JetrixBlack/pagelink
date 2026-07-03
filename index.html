@@ -1,17 +1,24 @@
 <!DOCTYPE html>
+<!-- PageLink — Link-in-bio personalizable, frontend puro, sin dependencias -->
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Descripci&oacute;n para motores de b&uacute;squeda -->
   <meta name="description" content="Pagelink - Todos mis enlaces en un solo lugar">
   <title>Pagelink</title>
+
+  <!-- Fuentes tipogr&aacute;ficas desde Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Hoja de estilos externa -->
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
   <div class="container">
+    <!-- Hero: foto de fondo + nombre superpuesto -->
     <div class="hero" id="heroSection">
       <div class="hero-placeholder">
         <img class="hero-avatar" id="heroAvatar" alt="Gabriela Lamont">
@@ -19,17 +26,21 @@
       <div class="hero-name" id="displayName">Gabriela Lamont</div>
     </div>
 
+    <!-- Biograf&iacute;a corta -->
     <p class="bio" id="displayBio">Encuentra todos mis enlaces, aqu&iacute; &#x1F496;</p>
 
+    <!-- Contenedor donde JS renderiza los botones de enlaces -->
     <div class="links" id="linksContainer">
     </div>
 
+    <!-- Footer con la marca -->
     <div class="footer">
       <span class="footer-dot"></span>
       Pagelink
     </div>
   </div>
 
+  <!-- Script externo con toda la l&oacute;gica -->
   <script src="assets/js/script.js"></script>
 </body>
 </html>
