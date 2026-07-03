@@ -92,6 +92,15 @@
       justify-content: center;
     }
 
+    .hero-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
     .hero-placeholder-icon {
       width: 80px;
       height: 80px;
@@ -339,9 +348,9 @@
     <!-- Hero Profile Image -->
     <div class="hero" id="heroSection">
       <div class="hero-placeholder">
-        <div class="hero-placeholder-icon">P</div>
+        <img class="hero-avatar" id="heroAvatar" alt="Gabriela Lamont">
       </div>
-      <div class="hero-name" id="displayName">Pagelink</div>
+      <div class="hero-name" id="displayName">Gabriela Lamont</div>
     </div>
 
     <!-- Bio -->
@@ -364,9 +373,9 @@
     // CONFIGURATION
     // ═══════════════════════════════════════
     const CONFIG = {
-      name: 'Pagelink',
+      name: 'Gabriela Lamont',
       bio: 'Encuentra todos mis enlaces, aquí 💖',
-      avatarLetter: 'P',
+      avatar: 'https://i.pravatar.cc/200?img=5',
     };
 
     const DEFAULT_LINKS = [
@@ -420,6 +429,7 @@
     // ═══════════════════════════════════════
     // INIT
     // ═══════════════════════════════════════
+    document.getElementById('heroAvatar').src = CONFIG.avatar;
     renderLinks(DEFAULT_LINKS);
   </script>
 </body>
