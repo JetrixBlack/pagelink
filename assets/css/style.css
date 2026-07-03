@@ -64,8 +64,8 @@ body {
 .hero {
   width: calc(100% - 32px);
   max-width: 420px;
-  aspect-ratio: 4 / 3;
-  margin: 16px auto 0;
+  aspect-ratio: 3 / 4;
+  margin: 0 auto;
   border-radius: var(--radius-lg);
   overflow: hidden;
   position: relative;
@@ -264,23 +264,44 @@ body {
    FOOTER — Marca al final de la página
    ═══════════════════════════════════════════════════════════ */
 .footer {
-  font-size: 0.7rem;
-  color: var(--fg-muted);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-bottom: 32px;
+  width: 100%;
+  max-width: 480px;
+  padding: 20px 16px 32px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   opacity: 0;
   animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.9s forwards;
 }
 
-.footer-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
+.footer-divider {
+  width: 40px;
+  height: 2px;
+  border-radius: 2px;
   background: var(--accent);
+  opacity: 0.5;
+}
+
+.footer-text {
+  font-size: 0.72rem;
+  color: var(--fg-muted);
+  letter-spacing: 0.06em;
+  font-weight: 400;
+}
+
+.footer-brand {
+  font-size: 0.78rem;
+  color: var(--fg-secondary);
+  letter-spacing: 0.12em;
+  font-weight: 500;
+}
+
+.footer-year {
+  font-size: 0.65rem;
+  color: var(--fg-muted);
+  letter-spacing: 0.04em;
+  opacity: 0.6;
 }
 
 /* ═══════════════════════════════════════════════════════════
