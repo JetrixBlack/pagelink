@@ -53,13 +53,13 @@ body {
    ═══════════════════════════════════════════════════════════ */
 .container {
   width: 100%;
-  max-width: 480px;
+  max-width: 420px;
   display: flex;
   flex-direction: column;
   align-items: center;
   background: #080808;
   border-radius: var(--radius-lg);
-  padding: 0 0 16px;
+  padding: 0 0 12px;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -67,7 +67,8 @@ body {
    ═══════════════════════════════════════════════════════════ */
 .hero {
   width: 100%;
-  max-width: 420px;
+  max-width: 400px;
+  height: 180px;
   margin: 0 auto;
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -81,6 +82,8 @@ body {
 .hero-img,
 .hero-avatar {
   width: 100%;
+  height: 100%;
+  object-fit: cover;
   display: block;
 }
 
@@ -141,7 +144,7 @@ body {
   text-align: center;
   font-size: 0.85rem;
   color: var(--fg-secondary);
-  margin: 12px 0 18px;
+  margin: 8px 0 12px;
   padding: 0 24px;
   line-height: 1.6;
   font-weight: 300;
@@ -157,16 +160,16 @@ body {
   padding: 0 16px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 24px;
+  gap: 6px;
+  margin-bottom: 12px;
 }
 
 /* Cada botón de enlace */
 .link-btn {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 12px 18px;
+  gap: 12px;
+  padding: 10px 16px;
   background: var(--accent-gradient);
   border: none;
   border-radius: var(--radius);
@@ -216,8 +219,8 @@ body {
 
 /* Contenedor del icono dentro del botón */
 .link-btn-icon {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -229,8 +232,8 @@ body {
 }
 
 .link-btn-icon svg {
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
 }
 
 /* Bloque de texto del botón (título + subtítulo) */
@@ -241,20 +244,19 @@ body {
   align-items: center;
   position: relative;
   z-index: 1;
-  padding-right: 36px;
+  padding-right: 28px;
 }
 
 .link-btn-title {
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   font-weight: 600;
   letter-spacing: 0.01em;
 }
 
 .link-btn-subtitle {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 300;
   opacity: 0.85;
-  margin-top: 1px;
   font-style: italic;
 }
 
@@ -264,7 +266,7 @@ body {
 .footer {
   width: 100%;
   max-width: 480px;
-  padding: 20px 16px 32px;
+  padding: 10px 16px 14px;
   display: flex;
   flex-direction: column;
   align-items: center;
