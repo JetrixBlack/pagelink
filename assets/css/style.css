@@ -1,0 +1,273 @@
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #f6f4f1;
+  --fg: #3f3a36;
+  --fg-soft: #8a8580;
+  --accent: #7c3aed;
+  --accent-soft: rgba(124, 58, 237, 0.08);
+  --white: #fff;
+  --radius: 14px;
+  --radius-lg: 20px;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: system-ui, -apple-system, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.container {
+  width: 100%;
+  max-width: 420px;
+  padding: 0;
+}
+
+/* ═══ HEADER / COVER IMAGE ═══ */
+.hero {
+  position: relative;
+  width: 100%;
+  height: 280px;
+}
+
+.hero-cover {
+  width: 100%;
+  height: 210px;
+  object-fit: cover;
+  display: block;
+}
+
+.hero-cover-fallback {
+  width: 100%;
+  height: 210px;
+  background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 50%, #c4b5fd 100%);
+}
+
+/* Avatar — superpuesto sobre el cover */
+.hero-avatar-wrapper {
+  position: absolute;
+  top: 105px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-avatar {
+  width: 123px;
+  height: 123px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  box-shadow: 0 0 0 4px var(--bg);
+}
+
+/* Nombre debajo del avatar */
+.hero-name {
+  position: absolute;
+  bottom: 18px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 1.55rem;
+  font-weight: 600;
+  color: var(--fg);
+  line-height: 1.2;
+}
+
+/* ═══ BIO ═══ */
+.bio {
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--fg-soft);
+  margin: 8px 0 20px;
+  font-weight: 400;
+  padding: 0 20px;
+}
+
+/* ═══ BOTONES DE ENLACES ═══ */
+.links {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 0 20px;
+}
+
+.link-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px;
+  background: var(--accent-soft);
+  border: none;
+  border-radius: var(--radius);
+  color: var(--fg);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background 0.25s ease, transform 0.2s ease;
+}
+
+.link-btn:hover {
+  background: rgba(124, 58, 237, 0.15);
+  transform: translateY(-1px);
+}
+
+.link-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.link-btn-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--white);
+  border-radius: 10px;
+}
+
+.link-btn-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.link-btn-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.link-btn-title {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.link-btn-subtitle {
+  font-size: 0.75rem;
+  color: var(--fg-soft);
+  margin-top: 1px;
+  font-weight: 400;
+}
+
+/* ═══ TESTIMONIOS ═══ */
+.testimonials {
+  width: 100%;
+  padding: 0 20px;
+  margin-bottom: 20px;
+}
+
+.testimonials-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--fg);
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.testimonial {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  margin-bottom: 10px;
+}
+
+.testimonial-text {
+  font-size: 0.85rem;
+  color: var(--fg);
+  line-height: 1.5;
+  text-align: center;
+  font-style: italic;
+  margin-bottom: 8px;
+}
+
+.testimonial-author {
+  font-size: 0.8rem;
+  color: var(--fg-soft);
+  font-weight: 500;
+  text-align: center;
+}
+
+/* ═══ FOOTER ═══ */
+.footer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 20px 20px;
+}
+
+.footer-divider {
+  width: 32px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  opacity: 0.3;
+}
+
+.footer-brand {
+  font-size: 0.8rem;
+  color: var(--fg-soft);
+  letter-spacing: 0.08em;
+  font-weight: 500;
+}
+
+.footer-text {
+  font-size: 0.7rem;
+  color: var(--fg-soft);
+  opacity: 0.7;
+}
+
+.footer-year {
+  font-size: 0.65rem;
+  color: var(--fg-soft);
+  opacity: 0.5;
+}
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 480px) {
+  .hero-avatar {
+    width: 110px;
+    height: 110px;
+  }
+
+  .hero-avatar-wrapper {
+    width: 125px;
+    height: 125px;
+  }
+
+  .hero-name {
+    font-size: 1.4rem;
+  }
+
+  .link-btn {
+    padding: 14px;
+  }
+
+  .testimonial {
+    padding: 14px 16px;
+  }
+}
