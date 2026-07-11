@@ -25,6 +25,7 @@ $message = '';
 // Cargar datos PRIMERO (necesarios para el handler POST y la vista)
 $profile = $db->query("SELECT * FROM profile WHERE id = 1")->fetch();
 $sq = $db->query("SELECT * FROM security_question WHERE id = 1")->fetch();
+$admin = $db->query("SELECT * FROM admin WHERE id = 1")->fetch();
 
 // Determinar qué pestaña está activa (perfil o seguridad)
 $activeTab = $_GET['tab'] ?? 'perfil';
@@ -148,8 +149,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
         // ─── CONFIGURAR PREGUNTA DE SEGURIDAD ───
         if ($_POST['action'] === 'set_security_question') {
-            $question = trim($_POST['question'] ?? '');
+            $questionSel = trim($_POST['question'] ?? '');
+            $questionCustom = trim($_POST['question_custom'] ?? '');
             $answer   = trim($_POST['answer'] ?? '');
+
+            // Si selecciono "Otra", usar el campo custom
+            $question = $questionSel === '__custom' ? $questionCustom : $questionSel;
 
             if ($question === '' || $answer === '') {
                 $message = 'La pregunta y la respuesta son obligatorias.';
@@ -252,17 +257,24 @@ $flash = flash_get();
     <div class="container">
         <?php include __DIR__ . '/_nav.php'; ?>
         
-        <!-- Mensajes de éxito o error -->
-        <?php if ($flash): ?>
-            <div class="message<?= $flash['type'] === 'error' ? ' message-error' : '' ?>">
-                <?= htmlspecialchars($flash['msg']) ?>
+        <!-- Toast notifications (flotantes) -->
+        <div class="toast-container" id="toastContainer"></div>
+
+        <!-- Indicadores de estado de seguridad -->
+        <div class="security-status">
+            <?php
+            $passConfigured = ($admin['password_hash'] ?? '') !== '' && $admin['password_hash'] !== password_hash('admin123', PASSWORD_DEFAULT);
+            $sqConfigured = !empty($sq['question']) && !empty($sq['answer_hash']);
+            ?>
+            <div class="status-chip <?= $passConfigured ? 'configured' : 'not-configured' ?>">
+                <span class="status-chip-dot"></span>
+                Contrasena <?= $passConfigured ? 'cambiada' : 'por defecto' ?>
             </div>
-        <?php endif; ?>
-        <?php if ($message): ?>
-            <div class="message<?= str_starts_with($message, 'Token') || str_starts_with($message, 'La ') || str_starts_with($message, 'Las ') ? ' message-error' : '' ?>">
-                <?= htmlspecialchars($message) ?>
+            <div class="status-chip <?= $sqConfigured ? 'configured' : 'not-configured' ?>">
+                <span class="status-chip-dot"></span>
+                Pregunta <?= $sqConfigured ? 'configurada' : 'sin configurar' ?>
             </div>
-        <?php endif; ?>
+        </div>
 
         <div class="card">
             <!-- ═══ PESTAÑAS DE NAVEGACIÓN ═══ -->
@@ -373,7 +385,26 @@ $flash = flash_get();
                         <input type="hidden" name="action" value="set_security_question">
                         
                         <label for="question">Pregunta</label>
-                        <input type="text" name="question" id="question" value="<?= htmlspecialchars($sq['question'] ?? '') ?>" placeholder="Ej: Cual es el nombre de tu primera mascota?" required>
+                        <select name="question" id="question" required>
+                            <option value="">Selecciona una pregunta...</option>
+                            <?php
+                            $questions = [
+                                'Cual es el nombre de tu primera mascota?',
+                                'En que ciudad naciste?',
+                                'Cual es el nombre de tu mejor amigo de la infancia?',
+                                'Cual fue tu primer apellido de soltera de tu madre?',
+                                'Cual es tu color favorito?',
+                                'Cual es el nombre de tu escuela primaria?',
+                                'Cual es tu comida favorita?',
+                                'Cual es tu pelicula favorita?',
+                            ];
+                            $currentQ = $sq['question'] ?? '';
+                            foreach ($questions as $q): ?>
+                            <option value="<?= htmlspecialchars($q) ?>"<?= $currentQ === $q ? ' selected' : '' ?>><?= htmlspecialchars($q) ?></option>
+                            <?php endforeach; ?>
+                            <option value="__custom"<?php if ($currentQ && !in_array($currentQ, $questions)): ?> selected<?php endif; ?>>Otra pregunta (escribir)...</option>
+                        </select>
+                        <input type="text" name="question_custom" id="question_custom" value="<?= (!empty($currentQ) && !in_array($currentQ, $questions)) ? htmlspecialchars($currentQ) : '' ?>" placeholder="Escribe tu pregunta personalizada" style="display:none;margin-top:8px">
                         
                         <label for="answer">Respuesta</label>
                         <input type="text" name="answer" id="answer" value="" placeholder="<?= ($sq['answer_hash'] ?? '') ? '(ya configurada - escribe para cambiar)' : 'Escribe tu respuesta' ?>" required autocomplete="off">
@@ -452,6 +483,42 @@ $flash = flash_get();
             });
         }
     });
+
+    // ═══ SELECTOR DE PREGUNTA DE SEGURIDAD ═══
+    var questionSelect = document.getElementById('question');
+    var customInput = document.getElementById('question_custom');
+    if (questionSelect && customInput) {
+        questionSelect.addEventListener('change', function() {
+            customInput.style.display = this.value === '__custom' ? 'block' : 'none';
+            if (this.value !== '__custom') customInput.value = '';
+        });
+        // Disparar change al cargar por si ya hay valor seleccionado
+        if (questionSelect.value === '__custom') customInput.style.display = 'block';
+    }
+
+    // ═══ TOAST NOTIFICATIONS ═══
+    <?php if ($message): ?>
+    (function() {
+        var isError = <?= (str_starts_with($message, 'Token') || str_starts_with($message, 'La ') || str_starts_with($message, 'Las ') || str_starts_with($message, 'No')) ? 'true' : 'false' ?>;
+        var container = document.getElementById('toastContainer');
+        var toast = document.createElement('div');
+        toast.className = 'toast ' + (isError ? 'toast-error' : 'toast-success');
+        toast.innerHTML = '<span class="toast-icon">' + (isError ? '&#10060;' : '&#9989;') + '</span><?= addslashes(htmlspecialchars($message)) ?>';
+        container.appendChild(toast);
+        setTimeout(function() { toast.remove(); }, 4000);
+    })();
+    <?php endif; ?>
+    <?php if ($flash): ?>
+    (function() {
+        var isError = <?= $flash['type'] === 'error' ? 'true' : 'false' ?>;
+        var container = document.getElementById('toastContainer');
+        var toast = document.createElement('div');
+        toast.className = 'toast ' + (isError ? 'toast-error' : 'toast-success');
+        toast.innerHTML = '<span class="toast-icon">' + (isError ? '&#10060;' : '&#9989;') + '</span><?= addslashes(htmlspecialchars($flash['msg'])) ?>';
+        container.appendChild(toast);
+        setTimeout(function() { toast.remove(); }, 4000);
+    })();
+    <?php endif; ?>
     </script>
 </body>
 </html>

@@ -78,9 +78,10 @@ function check_session_timeout(): void {
     if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in']) {
         $lastActivity = $_SESSION['last_activity'] ?? 0;
         if ($lastActivity > 0 && (time() - $lastActivity) > SESSION_TIMEOUT) {
-            // La sesión expiró, destruir y redirigir al login
+            // La sesión expiró, destruir y redirigir a pagina de sesion expirada
             session_destroy();
-            header('Location: ' . (basename($_SERVER['SCRIPT_NAME']) === 'login.php' ? 'login.php' : dirname($_SERVER['SCRIPT_NAME']) . '/login.php'));
+            $currentDir = dirname($_SERVER['SCRIPT_NAME']);
+            header('Location: ' . $currentDir . '/session-expired.php');
             exit;
         }
         // Actualizar timestamp de última actividad

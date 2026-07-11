@@ -96,9 +96,22 @@ $flash = flash_get();
     </style>
 </head>
 <body>
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-spinner"></div>
+        <div class="preloader-text">PageLink</div>
+    </div>
+    <style>
+    .preloader { position:fixed; inset:0; z-index:10000; background:#0f0f0f; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; transition:opacity 0.4s; }
+    .preloader.fade-out { opacity:0; pointer-events:none; }
+    .preloader-spinner { width:36px; height:36px; border:3px solid #2a2a2a; border-top-color:#c47a8a; border-radius:50%; animation:spin 0.8s linear infinite; }
+    .preloader-text { color:#8a8080; font-size:0.9rem; letter-spacing:0.05em; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    </style>
+
     <div class="container">
         <?php include __DIR__ . '/_nav.php'; ?>
-        <?php if ($flash): ?><div class="message<?= $flash['type'] === 'error' ? ' message-error' : '' ?>"><?= htmlspecialchars($flash['msg']) ?></div><?php endif; ?>
+        <div class="toast-container" id="toastContainer"></div>
 
         <!-- ═══ CARDS RESUMEN ═══ -->
         <div class="grid">
@@ -245,6 +258,25 @@ $flash = flash_get();
         if (countdown <= 0) countdown = 30;
         badge.textContent = 'Auto-refresh: ' + countdown + 's';
     }, 1000);
+    </script>
+    <script>
+    <?php if ($flash): ?>
+    (function() {
+        var isError = <?= $flash['type'] === 'error' ? 'true' : 'false' ?>;
+        var container = document.getElementById('toastContainer');
+        var toast = document.createElement('div');
+        toast.className = 'toast ' + (isError ? 'toast-error' : 'toast-success');
+        toast.innerHTML = '<span class="toast-icon">' + (isError ? '&#10060;' : '&#9989;') + '<?= addslashes(htmlspecialchars($flash['msg'])) ?></span>';
+        container.appendChild(toast);
+        setTimeout(function() { toast.remove(); }, 4000);
+    })();
+    <?php endif; ?>
+    </script>
+    <script>
+    window.addEventListener('load', function() {
+        var p = document.getElementById('preloader');
+        if (p) { p.classList.add('fade-out'); setTimeout(function() { p.remove(); }, 400); }
+    });
     </script>
 </body>
 </html>

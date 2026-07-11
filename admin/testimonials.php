@@ -55,12 +55,24 @@ $testimonials = $db->query("SELECT * FROM testimonials ORDER BY is_approved ASC,
     <style>/* Modal styles loaded from style.css */</style>
 </head>
 <body>
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-spinner"></div>
+        <div class="preloader-text">PageLink</div>
+    </div>
+    <style>
+    .preloader { position:fixed; inset:0; z-index:10000; background:#0f0f0f; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; transition:opacity 0.4s; }
+    .preloader.fade-out { opacity:0; pointer-events:none; }
+    .preloader-spinner { width:36px; height:36px; border:3px solid #2a2a2a; border-top-color:#c47a8a; border-radius:50%; animation:spin 0.8s linear infinite; }
+    .preloader-text { color:#8a8080; font-size:0.9rem; letter-spacing:0.05em; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    </style>
+
     <div class="container">
         <!-- Barra de navegación del panel de administración -->
         <?php include __DIR__ . '/_nav.php'; ?>
 
-        <!-- Mostrar mensaje de éxito o error si existe -->
-        <?php if ($message): ?><div class="message"><?= htmlspecialchars($message) ?></div><?php endif; ?>
+        <div class="toast-container" id="toastContainer"></div>
 
         <div class="card">
             <h2>Gestión de Testimonios</h2>
@@ -175,6 +187,24 @@ $testimonials = $db->query("SELECT * FROM testimonials ORDER BY is_approved ASC,
                 });
             }
         });
+    </script>
+    <script>
+    <?php if ($message): ?>
+    (function() {
+        var container = document.getElementById('toastContainer');
+        var toast = document.createElement('div');
+        toast.className = 'toast toast-success';
+        toast.innerHTML = '<span class="toast-icon">&#9989;</span><?= addslashes(htmlspecialchars($message)) ?>';
+        container.appendChild(toast);
+        setTimeout(function() { toast.remove(); }, 4000);
+    })();
+    <?php endif; ?>
+    </script>
+    <script>
+    window.addEventListener('load', function() {
+        var p = document.getElementById('preloader');
+        if (p) { p.classList.add('fade-out'); setTimeout(function() { p.remove(); }, 400); }
+    });
     </script>
 </body>
 </html>

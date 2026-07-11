@@ -127,6 +127,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 <body>
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-spinner"></div>
+        <div class="preloader-text">PageLink</div>
+    </div>
+    <style>
+        .preloader { position:fixed; inset:0; z-index:10000; background:#0f0f0f; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; transition:opacity 0.4s; }
+        .preloader.fade-out { opacity:0; pointer-events:none; }
+        .preloader-spinner { width:36px; height:36px; border:3px solid #2a2a2a; border-top-color:#c47a8a; border-radius:50%; animation:spin 0.8s linear infinite; }
+        .preloader-text { color:#8a8080; font-size:0.9rem; letter-spacing:0.05em; }
+        @keyframes spin { to { transform:rotate(360deg); } }
+    </style>
+
     <!-- ═══════════════════════════════════════
          FORMULARIO DE LOGIN
          Envía usuario y contraseña al mismo archivo vía POST.
@@ -170,6 +183,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             eyeClosed.style.display = 'none';
         }
     }
+    // Ocultar preloader cuando la pagina este lista
+    window.addEventListener('load', function() {
+        var p = document.getElementById('preloader');
+        if (p) { p.classList.add('fade-out'); setTimeout(function() { p.remove(); }, 400); }
+    });
     </script>
 </body>
 </html>
