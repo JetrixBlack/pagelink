@@ -1,1 +1,4 @@
 .git/
+database.sqlite
+uploads/avatar_*
+uploads/cover_*

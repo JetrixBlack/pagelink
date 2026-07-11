@@ -1,24 +1,4 @@
 // ═══════════════════════════════════════════════════════════
-// CONFIGURACIÓN — Datos del perfil
-// ═══════════════════════════════════════════════════════════
-const CONFIG = {
-  name: 'Gabriela Lamont',
-  bio: 'Encuentra todos mis enlaces, aquí 💖',
-  avatar: 'https://i.pravatar.cc/200?img=5',
-};
-
-// ═══════════════════════════════════════════════════════════
-// ENLACES — Lista de redes sociales (label, subtitle, url)
-// ═══════════════════════════════════════════════════════════
-const DEFAULT_LINKS = [
-  { label: 'OnlyFans', subtitle: 'Lo que estás buscando..', url: '#' },
-  { label: 'Telegram VIP', subtitle: 'Adelanto de contenido y promos', url: '#' },
-  { label: 'Instagram', subtitle: 'Mi vida :)', url: '#' },
-  { label: 'Threads', subtitle: 'Sígueme', url: '#' },
-  { label: 'WhatsApp', subtitle: 'Escríbeme', url: '#' },
-];
-
-// ═══════════════════════════════════════════════════════════
 // ICONOS SVG — Cada red social con su ícono oficial en SVG
 // ═══════════════════════════════════════════════════════════
 const ICONS = {
@@ -41,14 +21,13 @@ const ICONS = {
 function renderLinks(links) {
   const container = document.getElementById('linksContainer');
   container.innerHTML = links.map((link, i) => {
-    // Busca el icono correspondiente por nombre
     const iconKey = Object.keys(ICONS).find(k => link.label.toLowerCase().includes(k));
     const icon = ICONS[iconKey] || ICONS.link;
     const subtitleHtml = link.subtitle
       ? `<span class="link-btn-subtitle">${link.subtitle}</span>`
       : '';
     return `
-      <a href="${link.url}" class="link-btn" target="_blank" rel="noopener" style="animation-delay: ${0.35 + i * 0.07}s">
+      <a href="api/track-click.php?id=${link.id}" class="link-btn" target="_blank" rel="noopener" style="animation-delay: ${0.35 + i * 0.07}s">
         <span class="link-btn-icon">${icon}</span>
         <span class="link-btn-text">
           <span class="link-btn-title">${link.label}</span>
@@ -60,9 +39,49 @@ function renderLinks(links) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// INICIALIZACIÓN
+// INICIALIZACIÓN — Carga datos desde la API
 // ═══════════════════════════════════════════════════════════
-// Asigna la foto de perfil desde la configuración
-document.getElementById('heroAvatar').src = CONFIG.avatar;
-// Renderiza todos los botones de enlaces
-renderLinks(DEFAULT_LINKS);
+function handleFetchError(area) {
+  return err => {
+    console.error('Error cargando', area, err);
+    const el = document.getElementById('linksContainer');
+    if (area === 'links' && el) {
+      el.innerHTML = '<p style="text-align:center;color:#8a8580;padding:20px">Error al cargar los enlaces. Intenta de nuevo más tarde.</p>';
+    }
+  };
+}
+
+fetch('api/get-profile.php')
+  .then(r => { if (!r.ok) throw Error('HTTP ' + r.status); return r.json(); })
+  .then(profile => {
+    document.getElementById('displayName').textContent = profile.name;
+    document.getElementById('displayBio').textContent = profile.bio;
+    if (profile.avatar) {
+      const img = document.getElementById('heroAvatar');
+      img.src = profile.avatar;
+      img.onerror = () => {
+        img.src = 'api/avatar-fallback.php?name=' + encodeURIComponent(profile.name);
+      };
+    }
+  })
+  .catch(handleFetchError('perfil'));
+
+fetch('api/get-links.php')
+  .then(r => { if (!r.ok) throw Error('HTTP ' + r.status); return r.json(); })
+  .then(links => renderLinks(links))
+  .catch(handleFetchError('links'));
+
+fetch('api/get-testimonials.php')
+  .then(r => { if (!r.ok) throw Error('HTTP ' + r.status); return r.json(); })
+  .then(testimonials => {
+    const container = document.getElementById('testimonialsContainer');
+    if (!testimonials.length) return;
+    container.innerHTML = `<h3 class="testimonials-title">Lo que dicen mis clientes</h3>
+      ${testimonials.map(t => `
+        <div class="testimonial">
+          <p class="testimonial-text">&ldquo;${t.text}&rdquo;</p>
+          <p class="testimonial-author">&mdash; ${t.author}</p>
+        </div>
+      `).join('')}`;
+  })
+  .catch(handleFetchError('testimonios'));
