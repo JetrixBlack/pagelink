@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) { header('Location: login.php'); exit; }
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../../config/database.php';
 check_session_timeout();
 $db = getDB();
 
@@ -63,7 +63,7 @@ $flash = flash_get();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard — PageLink Admin</title>
-    <link rel="stylesheet" href="style.css?v=<?= filemtime(__DIR__ . '/style.css') ?>">
+    <link rel="stylesheet" href="../css/admin.css?v=<?= filemtime(__DIR__ . '/../css/admin.css') ?>">
     <meta http-equiv="refresh" content="30">
     <style>
         .dash-toolbar { display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap; align-items:center; }
@@ -110,7 +110,7 @@ $flash = flash_get();
     </style>
 
     <div class="container">
-        <?php include __DIR__ . '/_nav.php'; ?>
+        <?php include __DIR__ . '/../partials/_nav.php'; ?>
         <div class="toast-container" id="toastContainer"></div>
 
         <!-- ═══ CARDS RESUMEN ═══ -->

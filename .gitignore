@@ -9,10 +9,10 @@ database.sqlite-wal
 database.sqlite-shm
 database.php
 
-# Imágenes subidas por usuarios (avatars y portadas)
+# Imagenes subidas por usuarios (avatars y portadas)
 uploads/avatar_*
 uploads/cover_*
-uploads/!default.jpg
+!uploads/default.jpg
 
 # Archivos de sistema
 .DS_Store
@@ -28,7 +28,7 @@ desktop.ini
 *.sublime-project
 *.sublime-workspace
 
-# Archivos de dependencias (si se usan en el futuro)
+# Archivos de dependencias
 node_modules/
 vendor/
 composer.lock
@@ -38,7 +38,7 @@ composer.lock
 *.log
 *.cache
 
-# Variables de entorno (si se implementa .env en el futuro)
+# Variables de entorno
 .env
 .env.local
 .env.production

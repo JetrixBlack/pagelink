@@ -1,4 +1,4 @@
-# PageLink ⚡
+# PageLink 
 
 **Link-in-bio personalizable** con panel de administracion completo, tema oscuro negro + rosado apagado.
 
@@ -14,6 +14,7 @@ PageLink es una pagina tipo Linktree con backend PHP + SQLite: panel admin, trac
 - Modal para dejar comentarios (con honeypot anti-bots)
 - Footer con marca y copyright
 - Open Graph + Twitter Cards para SEO
+- Preloader con spinner al cargar
 - Totalmente responsive (mobile-first)
 
 ### Panel Admin
@@ -24,12 +25,18 @@ PageLink es una pagina tipo Linktree con backend PHP + SQLite: panel admin, trac
 - Exportar clics a CSV
 - Perfil unificado con tabs (Perfil + Seguridad)
 - Vista previa de imagenes (avatar y portada) antes de subir
+- Selector de pregunta de seguridad (8 opciones + campo custom)
+- Indicadores de estado (contrasena configurada, pregunta configurada)
 - Recuperacion de contrasena por pregunta de seguridad (2 pasos)
 - Ojo para visualizar/ocultar contrasenas en todos los formularios
+- Notificaciones flotantes toast (verde exito, rojo error)
+- Preloader con spinner en todas las paginas
+- Pagina de sesion expirada con estilo del login
 - Session timeout (1 hora) + proteccion CSRF
 
 ### Seguridad
-- Contraseñas hasheadas con `password_hash()` (bcrypt)
+- Contrasenas hasheadas con `password_hash()` (bcrypt)
+- Validacion: solo letras (a-z, A-Z), numeros (0-9) y caracteres especiales
 - Token CSRF en todos los formularios
 - Rate limiting en recuperacion de contrasena (max 5 intentos/hora)
 - Validacion de MIME type real en subida de archivos (no solo extension)
@@ -37,72 +44,51 @@ PageLink es una pagina tipo Linktree con backend PHP + SQLite: panel admin, trac
 - Session timeout automatico
 - Sin dependencias externas (zero attack surface)
 
-## Requisitos
-
-- PHP 8.0+
-- Extensiones: PDO SQLite, GD, fileinfo, session
-- Apache/Nginx o PHP built-in server
-
-## Instalacion
-
-```bash
-# 1. Clonar o copiar el proyecto
-# 2. Ejecutar el setup (crea tablas + datos por defecto)
-php setup.php
-
-# 3. Iniciar servidor de desarrollo
-php -S localhost:8000
-```
-
-Accesos:
-- **Pagina publica**: `http://localhost:8000`
-- **Panel admin**: `http://localhost:8000/admin/`
-  - Usuario: `admin`
-  - Contrasena: `admin123`
-  - Pregunta de seguridad: "Cual es el nombre de tu primera mascota?"
-  - Respuesta: `pagelink`
-
 ## Estructura
 
 ```
 PageLink/
-├── index.php                 # Pagina principal (PHP dinamico)
-├── index.html                # Fallback estatico
-├── setup.php                 # Inicializador de base de datos
-├── database.sqlite           # Base de datos SQLite
-├── .gitignore                # Reglas de Git
-├── README.md                 # Esta documentacion
+├── index.php                       # Pagina principal (PHP dinamico)
+├── setup.php                       # Inicializador de base de datos
+├── database.sqlite                 # Base de datos SQLite
+├── .gitignore                      # Reglas de Git
+├── README.md                       # Esta documentacion
+├── iniciar.bat                     # Iniciar servidor de desarrollo
 ├── config/
-│   └── database.php          # PDO + helpers (CSRF, flash, session)
+│   └── database.php                # PDO + helpers (CSRF, flash, session)
+├── admin/
+│   ├── pages/                      # Paginas del panel de administracion
+│   │   ├── index.php               # Dashboard (stats + historial paginado)
+│   │   ├── login.php               # Login con ojo de recontrasena
+│   │   ├── logout.php              # Cerrar sesion
+│   │   ├── links.php               # CRUD enlaces con modales
+│   │   ├── testimonials.php        # Gestion de testimonios
+│   │   ├── profile.php             # Perfil unificado (tabs: Perfil + Seguridad)
+│   │   ├── forgot-password.php     # Recuperacion por pregunta de seguridad
+│   │   ├── session-expired.php     # Vista de sesion expirada
+│   │   └── export-csv.php          # Exportar clics a CSV
+│   ├── partials/
+│   │   └── _nav.php                # Navbar unificado
+│   ├── css/
+│   │   └── admin.css               # Estilos del panel admin (tema oscuro)
+│   └── js/
+│       └── admin.js                # Utilidades JS (toggle contrasena)
 ├── assets/
-│   ├── css/style.css         # Estilos de pagina publica (tema oscuro)
-│   └── js/script.js          # Logica frontend (fetch, iconos SVG, carrusel)
-├── api/                      # Endpoints publicos JSON
-│   ├── get-profile.php       # Obtener datos del perfil
-│   ├── get-links.php         # Obtener enlaces activos
-│   ├── get-testimonials.php  # Obtener testimonios aprobados
-│   ├── submit-testimonial.php# Enviar comentario (con honeypot)
-│   ├── track-click.php       # Registrar clic + redirigir
-│   ├── get-clicks.php        # Paginacion de clics (para admin)
-│   └── avatar-fallback.php   # Generar avatar con iniciales (GD)
-├── admin/                    # Panel de administracion
-│   ├── style.css             # Estilos compartidos admin (tema oscuro)
-│   ├── _nav.php              # Navbar unificado
-│   ├── login.php             # Login con ojo de contrasena
-│   ├── logout.php            # Cerrar sesion
-│   ├── index.php             # Dashboard (stats + historial paginado)
-│   ├── links.php             # CRUD enlaces con modales
-│   ├── testimonials.php      # Gestion de testimonios
-│   ├── profile.php           # Perfil unificado (tabs: Perfil + Seguridad)
-│   ├── forgot-password.php   # Recuperacion por pregunta de seguridad
-│   └── export-csv.php        # Exportar clics a CSV
-└── uploads/                  # Imagenes subidas (avatars, portadas)
-    └── default.jpg           # Avatar por defecto
+│   ├── css/
+│   │   └── style.css               # Estilos de pagina publica (tema oscuro)
+│   └── js/
+│       └── script.js               # Logica frontend (fetch, iconos SVG, carrusel)
+├── api/                            # Endpoints publicos JSON
+│   ├── get-profile.php             # Obtener datos del perfil
+│   ├── get-links.php               # Obtener enlaces activos
+│   ├── get-testimonials.php        # Obtener testimonios aprobados
+│   ├── submit-testimonial.php      # Enviar comentario (con honeypot)
+│   ├── track-click.php             # Registrar clic + redirigir
+│   ├── get-clicks.php              # Paginacion de clics (para admin)
+│   └── avatar-fallback.php         # Generar avatar con iniciales (GD)
+└── uploads/                        # Imagenes subidas (avatars, portadas)
+    └── default.jpg                 # Avatar por defecto
 ```
-
-## Iconos SVG Disponibles
-
-Telegram, GitHub, Instagram, Facebook, Twitter/X, OnlyFans, TikTok, Threads, YouTube, WhatsApp, Link (generico)
 
 ## Base de Datos
 
@@ -113,6 +99,28 @@ Telegram, GitHub, Instagram, Facebook, Twitter/X, OnlyFans, TikTok, Threads, You
 - `testimonials` — Testimonios (con sistema de aprobacion)
 - `admin` — Credenciales del administrador
 - `security_question` — Pregunta de seguridad para recuperacion
+
+## Instalacion
+
+```bash
+# 1. Ejecutar el setup (crea tablas + datos por defecto)
+php setup.php
+
+# 2. Iniciar servidor de desarrollo
+php -S localhost:8000
+```
+
+Accesos:
+- **Pagina publica**: `http://localhost:8000`
+- **Panel admin**: `http://localhost:8000/admin/pages/login.php`
+  - Usuario: `admin`
+  - Contrasena: `admin123`
+  - Pregunta de seguridad: "Cual es el nombre de tu primera mascota?"
+  - Respuesta: `pagelink`
+
+## Iconos SVG Disponibles
+
+Telegram, GitHub, Instagram, Facebook, Twitter/X, OnlyFans, TikTok, Threads, YouTube, WhatsApp, Link (generico)
 
 ## Tema de Colores
 

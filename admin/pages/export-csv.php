@@ -12,7 +12,7 @@ session_start();
 // Verificar que el admin esté autenticado; si no, redirigir al login
 if (!isset($_SESSION['admin_logged_in'])) { header('Location: login.php'); exit; }
 
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../../config/database.php';
 
 // Verificar si la sesión ha expirado por inactividad
 check_session_timeout();

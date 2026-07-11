@@ -11,7 +11,7 @@
 session_start();
 
 // Cargar la configuración de base de datos
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../../config/database.php';
 
 // ─── Manejo del envío del formulario (POST) ───────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

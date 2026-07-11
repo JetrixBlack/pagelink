@@ -28,6 +28,6 @@ $pages = [
         <!-- Enlace para cerrar sesión -->
         <a href="logout.php">Salir</a>
         <!-- Enlace para abrir la página pública en una nueva pestaña -->
-        <a href="../index.php" target="_blank" class="nav-accent" title="Abrir pagina publica en nueva pestana">Ver pagina</a>
+        <a href="../../index.php" target="_blank" class="nav-accent" title="Abrir pagina publica en nueva pestana">Ver pagina</a>
     </nav>
 </header>

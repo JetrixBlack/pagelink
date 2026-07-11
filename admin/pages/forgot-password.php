@@ -10,7 +10,7 @@
  */
 
 session_start();
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../../config/database.php';
 $db = getDB();
 
 // Determinar en qué paso del flujo nos encontramos (1 o 2)

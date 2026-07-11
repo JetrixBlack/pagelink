@@ -17,7 +17,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
     exit;
 }
 
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../../config/database.php';
 check_session_timeout();
 $db = getDB();
 $message = '';
@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             default      => 'jpg'
                         };
                         $filename = 'cover_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
-                        move_uploaded_file($_FILES['cover_file']['tmp_name'], __DIR__ . '/../uploads/' . $filename);
+                        move_uploaded_file($_FILES['cover_file']['tmp_name'], __DIR__ . '/../../uploads/' . $filename);
                         $cover = 'uploads/' . $filename;
                     }
                 }
@@ -108,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             default      => 'jpg'
                         };
                         $filename = 'avatar_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
-                        move_uploaded_file($_FILES['avatar']['tmp_name'], __DIR__ . '/../uploads/' . $filename);
+                        move_uploaded_file($_FILES['avatar']['tmp_name'], __DIR__ . '/../../uploads/' . $filename);
                         $db->prepare("UPDATE profile SET avatar = ? WHERE id = 1")->execute(['uploads/' . $filename]);
                         $message = 'Perfil y avatar actualizados.';
                     }
@@ -200,7 +200,7 @@ $flash = flash_get();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil — PageLink Admin</title>
-    <link rel="stylesheet" href="style.css?v=<?= filemtime(__DIR__ . '/style.css') ?>">
+    <link rel="stylesheet" href="../css/admin.css?v=<?= filemtime(__DIR__ . '/../css/admin.css') ?>">
     <style>
         /* Contenedor centrado para el formulario de perfil */
         .container .card { max-width: 650px; margin-left: auto; margin-right: auto; }
@@ -255,7 +255,7 @@ $flash = flash_get();
 </head>
 <body>
     <div class="container">
-        <?php include __DIR__ . '/_nav.php'; ?>
+        <?php include __DIR__ . '/../partials/_nav.php'; ?>
         
         <!-- Toast notifications (flotantes) -->
         <div class="toast-container" id="toastContainer"></div>
@@ -289,7 +289,7 @@ $flash = flash_get();
                 <!-- Vista previa de portada -->
                 <div class="cover-preview" id="coverPreview">
                     <?php if (!empty($profile['cover'])): ?>
-                        <img src="../<?= htmlspecialchars($profile['cover']) ?>" alt="Portada" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+                        <img src="../../<?= htmlspecialchars($profile['cover']) ?>" alt="Portada" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
                     <?php endif; ?>
                     <div class="cover-preview-fallback"<?= !empty($profile['cover']) ? ' style="display:none"' : '' ?>></div>
                     <span class="cover-preview-label">Portada actual</span>
@@ -297,7 +297,7 @@ $flash = flash_get();
 
                 <!-- Vista previa de avatar -->
                 <div class="avatar-preview">
-                    <img id="avatarPreviewImg" src="../<?= $profile['avatar'] ?>" alt="Avatar" onerror="this.src='../api/avatar-fallback.php?name=<?= urlencode($profile['name']) ?>'">
+                    <img id="avatarPreviewImg" src="../../<?= $profile['avatar'] ?>" alt="Avatar" onerror="this.src='../../api/avatar-fallback.php?name=<?= urlencode($profile['name']) ?>'">
                 </div>
 
                 <!-- Formulario de perfil -->
@@ -418,7 +418,7 @@ $flash = flash_get();
     </div>
 
     <!-- Script de utilidades del panel admin (toggle contrasena) -->
-    <script src="admin.js?v=<?= filemtime(__DIR__ . '/admin.js') ?>"></script>
+    <script src="../js/admin.js?v=<?= filemtime(__DIR__ . '/../js/admin.js') ?>"></script>
     <script>
     /**
      * Cambiar entre pestañas (Perfil / Seguridad)

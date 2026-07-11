@@ -12,7 +12,7 @@ session_start();
 // Verificar que el admin esté autenticado; si no, redirigir al login
 if (!isset($_SESSION['admin_logged_in'])) { header('Location: login.php'); exit; }
 
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../../config/database.php';
 
 // Verificar si la sesión ha expirado por inactividad
 check_session_timeout();
@@ -51,7 +51,7 @@ $testimonials = $db->query("SELECT * FROM testimonials ORDER BY is_approved ASC,
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Testimonios — PageLink Admin</title>
-    <link rel="stylesheet" href="style.css?v=<?= filemtime(__DIR__ . '/style.css') ?>">
+    <link rel="stylesheet" href="../css/admin.css?v=<?= filemtime(__DIR__ . '/../css/admin.css') ?>">
     <style>/* Modal styles loaded from style.css */</style>
 </head>
 <body>
@@ -70,7 +70,7 @@ $testimonials = $db->query("SELECT * FROM testimonials ORDER BY is_approved ASC,
 
     <div class="container">
         <!-- Barra de navegación del panel de administración -->
-        <?php include __DIR__ . '/_nav.php'; ?>
+        <?php include __DIR__ . '/../partials/_nav.php'; ?>
 
         <div class="toast-container" id="toastContainer"></div>
 
