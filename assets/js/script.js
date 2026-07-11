@@ -1,5 +1,24 @@
 // ═══════════════════════════════════════════════════════════
-// ICONOS SVG — Cada red social con su ícono oficial en SVG
+// PASSWORD TOGGLE — Funcion global para campos de contrasena
+// ═══════════════════════════════════════════════════════════
+function togglePassword(inputId, btn) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  const eyeOpen = btn.querySelector('.eye-open');
+  const eyeClosed = btn.querySelector('.eye-closed');
+  if (input.type === 'password') {
+    input.type = 'text';
+    if (eyeOpen) eyeOpen.style.display = 'none';
+    if (eyeClosed) eyeClosed.style.display = 'block';
+  } else {
+    input.type = 'password';
+    if (eyeOpen) eyeOpen.style.display = 'block';
+    if (eyeClosed) eyeClosed.style.display = 'none';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// ICONOS SVG — Cada red social con su icono oficial en SVG
 // ═══════════════════════════════════════════════════════════
 const ICONS = {
   telegram: `<svg viewBox="0 0 24 24" fill="#26A5E4"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>`,
@@ -46,7 +65,7 @@ function handleFetchError(area) {
     console.error('Error cargando', area, err);
     const el = document.getElementById('linksContainer');
     if (area === 'links' && el) {
-      el.innerHTML = '<p style="text-align:center;color:#8a8580;padding:20px">Error al cargar los enlaces. Intenta de nuevo más tarde.</p>';
+      el.innerHTML = '<p style="text-align:center;color:#8a8080;padding:20px">Error al cargar los enlaces. Intenta de nuevo mas tarde.</p>';
     }
   };
 }
@@ -76,12 +95,133 @@ fetch('api/get-testimonials.php')
   .then(testimonials => {
     const container = document.getElementById('testimonialsContainer');
     if (!testimonials.length) return;
+
+    // Si solo hay 1 testimonio, mostrarlo directo
+    if (testimonials.length === 1) {
+      container.innerHTML = `<h3 class="testimonials-title">Lo que dicen mis clientes</h3>
+        <div class="testimonial-carousel">
+          <div class="testimonial active">
+            <p class="testimonial-text">&ldquo;${testimonials[0].text}&rdquo;</p>
+            <p class="testimonial-author">&mdash; ${testimonials[0].author}</p>
+          </div>
+        </div>`;
+      return;
+    }
+
+    // Carrusel automatico
+    let current = 0;
+    let interval;
+
+    const dotsHtml = testimonials.map((_, i) =>
+      `<button class="testimonial-dot${i === 0 ? ' active' : ''}" onclick="goToTestimonial(${i})" aria-label="Testimonio ${i + 1}"></button>`
+    ).join('');
+
+    const slidesHtml = testimonials.map((t, i) =>
+      `<div class="testimonial${i === 0 ? ' active' : ''}" data-index="${i}">
+        <p class="testimonial-text">&ldquo;${t.text}&rdquo;</p>
+        <p class="testimonial-author">&mdash; ${t.author}</p>
+      </div>`
+    ).join('');
+
     container.innerHTML = `<h3 class="testimonials-title">Lo que dicen mis clientes</h3>
-      ${testimonials.map(t => `
-        <div class="testimonial">
-          <p class="testimonial-text">&ldquo;${t.text}&rdquo;</p>
-          <p class="testimonial-author">&mdash; ${t.author}</p>
-        </div>
-      `).join('')}`;
+      <div class="testimonial-carousel">${slidesHtml}</div>
+      <div class="testimonial-dots">${dotsHtml}</div>`;
+
+    function goToTestimonial(index) {
+      const slides = container.querySelectorAll('.testimonial');
+      const dots = container.querySelectorAll('.testimonial-dot');
+
+      // Salir del actual
+      slides[current].classList.remove('active');
+      slides[current].classList.add('exit');
+      dots[current].classList.remove('active');
+
+      // Entrar al nuevo
+      current = index;
+      setTimeout(() => {
+        slides.forEach(s => s.classList.remove('exit'));
+        slides[current].classList.add('active');
+        dots[current].classList.add('active');
+      }, 50);
+
+      // Resetear timer
+      clearInterval(interval);
+      interval = setInterval(() => {
+        goToTestimonial((current + 1) % testimonials.length);
+      }, 4000);
+    }
+
+    // Exponer funcion global
+    window.goToTestimonial = goToTestimonial;
+
+    // Iniciar auto-play
+    interval = setInterval(() => {
+      goToTestimonial((current + 1) % testimonials.length);
+    }, 4000);
   })
   .catch(handleFetchError('testimonios'));
+
+// ═══════════════════════════════════════════════════════════
+// MODAL COMENTARIOS PÚBLICO
+// ═══════════════════════════════════════════════════════════
+
+function openCommentModal() {
+  document.getElementById('commentModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('commentAuthor').focus();
+}
+
+function closeCommentModal() {
+  document.getElementById('commentModal').classList.remove('active');
+  document.body.style.overflow = '';
+  document.getElementById('commentAlert').style.display = 'none';
+  document.getElementById('commentForm').reset();
+}
+
+document.getElementById('commentModal')?.addEventListener('click', function(e) {
+  if (e.target === this) closeCommentModal();
+});
+
+document.getElementById('commentForm')?.addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const form = e.target;
+  const btn = form.querySelector('button[type="submit"]');
+  const alert = document.getElementById('commentAlert');
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData.entries());
+  
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+  alert.style.display = 'none';
+  alert.className = 'comment-alert';
+
+  fetch('api/submit-testimonial.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+  .then(r => r.json())
+  .then(res => {
+    alert.style.display = 'block';
+    if (res.success) {
+      alert.textContent = '¡Gracias! Tu comentario ha sido enviado y está pendiente de aprobación.';
+      alert.classList.add('success');
+      form.reset();
+      setTimeout(closeCommentModal, 3000);
+    } else {
+      alert.textContent = res.error || 'Ocurrió un error al enviar el comentario.';
+      alert.classList.add('error');
+    }
+  })
+  .catch(err => {
+    alert.style.display = 'block';
+    alert.textContent = 'Error de conexión. Inténtalo de nuevo.';
+    alert.classList.add('error');
+    console.error(err);
+  })
+  .finally(() => {
+    btn.disabled = false;
+    btn.textContent = 'Enviar comentario';
+  });
+});
