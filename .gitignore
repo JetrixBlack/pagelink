@@ -2,12 +2,12 @@
 # PageLink - Reglas de Git
 # ═══════════════════════════════════════
 
-# Base de datos (contiene datos sensibles)
+# Base de datos (contiene datos sensibles — NO subir a Git)
 database.sqlite
 database.sqlite-journal
 database.sqlite-wal
 database.sqlite-shm
-database.php
+# database.php se incluye en Git (sin credenciales hardcodeadas desde la migración a Turso)
 
 # Imagenes subidas por usuarios (avatars y portadas)
 uploads/avatar_*

@@ -18,6 +18,8 @@ if (!isset($_SESSION['admin_logged_in'])) {
 }
 
 require_once __DIR__ . '/../../config/database.php';
+// Helper de uploads: maneja local (move_uploaded_file) y Vercel Blob
+require_once __DIR__ . '/../../config/upload.php';
 check_session_timeout();
 $db = getDB();
 $message = '';
@@ -59,17 +61,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     $allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
                     
                     if (in_array($detected, $allowed)) {
-                        // Generar nombre único para evitar conflictos
-                        $ext = match ($detected) {
-                            'image/jpeg' => 'jpg',
-                            'image/png'  => 'png',
-                            'image/webp' => 'webp',
-                            'image/gif'  => 'gif',
-                            default      => 'jpg'
-                        };
-                        $filename = 'cover_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
-                        move_uploaded_file($_FILES['cover_file']['tmp_name'], __DIR__ . '/../../uploads/' . $filename);
-                        $cover = 'uploads/' . $filename;
+                        // Subir portada vía helper unificado (local o Vercel Blob)
+                        $uploadedUrl = uploadImage($_FILES['cover_file'], 'cover');
+                        if ($uploadedUrl) {
+                            $cover = $uploadedUrl;
+                        }
                     }
                 }
             }
@@ -99,18 +95,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     if (!in_array($detectedType, $allowed)) {
                         $message = 'Formato no permitido (solo JPG, PNG, WebP, GIF).';
                     } else {
-                        // Generar nombre único y guardar
-                        $ext = match ($detectedType) {
-                            'image/jpeg' => 'jpg',
-                            'image/png'  => 'png',
-                            'image/webp' => 'webp',
-                            'image/gif'  => 'gif',
-                            default      => 'jpg'
-                        };
-                        $filename = 'avatar_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
-                        move_uploaded_file($_FILES['avatar']['tmp_name'], __DIR__ . '/../../uploads/' . $filename);
-                        $db->prepare("UPDATE profile SET avatar = ? WHERE id = 1")->execute(['uploads/' . $filename]);
-                        $message = 'Perfil y avatar actualizados.';
+                        // Subir avatar vía helper unificado (local o Vercel Blob)
+                        $uploadedUrl = uploadImage($_FILES['avatar'], 'avatar');
+                        if ($uploadedUrl) {
+                            $db->prepare("UPDATE profile SET avatar = ? WHERE id = 1")->execute([$uploadedUrl]);
+                            $message = 'Perfil y avatar actualizados.';
+                        } else {
+                            $message = 'Error al subir el avatar. Intenta de nuevo.';
+                        }
                     }
                 }
             }
