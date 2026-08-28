@@ -1,9 +1,13 @@
 <?php
-session_start();
-if (!isset($_SESSION['admin_logged_in'])) { header('Location: login.php'); exit; }
-require_once __DIR__ . '/../../config/database.php';
-check_session_timeout();
-$db = getDB();
+/*
+ * PageLink - Vista: Dashboard del admin.
+ */
+declare(strict_types=1);
+
+require_admin();
+require_once __DIR__ . '/_nav.php';
+
+$base = base_path();
 
 // ═══ STATS ═══
 $linkCount = $db->query("SELECT COUNT(*) FROM links")->fetchColumn();
@@ -13,7 +17,6 @@ $testimonialPending = $db->query("SELECT COUNT(*) FROM testimonials WHERE is_app
 $lastClick = $db->query("SELECT c.created_at, l.label FROM clicks c JOIN links l ON l.id = c.link_id ORDER BY c.created_at DESC LIMIT 1")->fetch();
 $avgClicks = $linkCount > 0 ? round($clickCount / $linkCount, 1) : 0;
 
-// Top links by clicks
 $topLinks = $db->query("SELECT l.label, COUNT(c.id) as total FROM links l LEFT JOIN clicks c ON c.link_id = l.id GROUP BY l.id ORDER BY total DESC LIMIT 5")->fetchAll();
 $maxClicks = $topLinks ? max(array_column($topLinks, 'total')) ?: 1 : 1;
 
@@ -27,15 +30,8 @@ $filterDate = $_GET['filter_date'] ?? '';
 
 $where = "1=1";
 $params = [];
-
-if ($filterLink !== '') {
-    $where .= " AND l.label = ?";
-    $params[] = $filterLink;
-}
-if ($filterDate !== '') {
-    $where .= " AND DATE(c.created_at) = ?";
-    $params[] = $filterDate;
-}
+if ($filterLink !== '') { $where .= " AND l.label = ?"; $params[] = $filterLink; }
+if ($filterDate !== '') { $where .= " AND DATE(c.created_at) = ?"; $params[] = $filterDate; }
 
 $countQuery = "SELECT COUNT(*) FROM clicks c JOIN links l ON l.id = c.link_id WHERE $where";
 $totalRecords = $db->prepare($countQuery);
@@ -52,10 +48,10 @@ $stmt = $db->prepare($query);
 $stmt->execute($params);
 $history = $stmt->fetchAll();
 
-// All links for filter dropdown
 $allLinks = $db->query("SELECT DISTINCT label FROM links ORDER BY label")->fetchAll(PDO::FETCH_COLUMN);
 
 $flash = flash_get();
+$adminCss = $base . 'assets/css/admin.css?v=' . asset_version('assets/css/admin.css');
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -63,57 +59,39 @@ $flash = flash_get();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard — PageLink Admin</title>
-    <link rel="stylesheet" href="../css/admin.css?v=<?= filemtime(__DIR__ . '/../css/admin.css') ?>">
+    <link rel="stylesheet" href="<?= $adminCss ?>">
     <meta http-equiv="refresh" content="30">
     <style>
         .dash-toolbar { display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap; align-items:center; }
         .dash-toolbar-right { margin-left:auto; display:flex; gap:8px; align-items:center; }
-        .auto-refresh-badge {
-            font-size:0.7rem; color:var(--fg-soft); background:var(--surface-hover);
-            padding:4px 10px; border-radius:99px; border:1px solid var(--border);
-        }
-        .filter-bar {
-            display:flex; gap:8px; flex-wrap:wrap; align-items:flex-end; margin-bottom:16px;
-        }
-        .filter-bar select, .filter-bar input[type="date"] {
-            padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm);
-            background:var(--bg); color:var(--fg); font-size:0.85rem;
-        }
-        .filter-bar select:focus, .filter-bar input[type="date"]:focus {
-            outline:none; border-color:var(--accent);
-        }
-        .pagination {
-            display:flex; gap:4px; justify-content:center; align-items:center; margin-top:16px;
-        }
-        .pagination a, .pagination span {
-            padding:6px 12px; border-radius:var(--radius-sm); font-size:0.8rem;
-            text-decoration:none; color:var(--fg-soft); border:1px solid var(--border);
-            transition: all 0.15s;
-        }
+        .auto-refresh-badge { font-size:0.7rem; color:var(--fg-soft); background:var(--surface-hover); padding:4px 10px; border-radius:99px; border:1px solid var(--border); }
+        .filter-bar { display:flex; gap:8px; flex-wrap:wrap; align-items:flex-end; margin-bottom:16px; }
+        .filter-bar select, .filter-bar input[type="date"] { padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg); color:var(--fg); font-size:0.85rem; }
+        .filter-bar select:focus, .filter-bar input[type="date"]:focus { outline:none; border-color:var(--accent); }
+        .pagination { display:flex; gap:4px; justify-content:center; align-items:center; margin-top:16px; }
+        .pagination a, .pagination span { padding:6px 12px; border-radius:var(--radius-sm); font-size:0.8rem; text-decoration:none; color:var(--fg-soft); border:1px solid var(--border); transition: all 0.15s; }
         .pagination a:hover { background:var(--surface-hover); color:var(--fg); }
         .pagination .active { background:var(--accent); color:#fff; border-color:var(--accent); }
         .pagination .disabled { opacity:0.4; pointer-events:none; }
     </style>
 </head>
 <body>
-    <!-- Preloader -->
     <div class="preloader" id="preloader">
         <div class="preloader-spinner"></div>
         <div class="preloader-text">PageLink</div>
     </div>
     <style>
-    .preloader { position:fixed; inset:0; z-index:10000; background:#0f0f0f; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; transition:opacity 0.4s; }
-    .preloader.fade-out { opacity:0; pointer-events:none; }
-    .preloader-spinner { width:36px; height:36px; border:3px solid #2a2a2a; border-top-color:#c47a8a; border-radius:50%; animation:spin 0.8s linear infinite; }
-    .preloader-text { color:#8a8080; font-size:0.9rem; letter-spacing:0.05em; }
-    @keyframes spin { to { transform:rotate(360deg); } }
+        .preloader { position:fixed; inset:0; z-index:10000; background:#0f0f0f; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; transition:opacity 0.4s; }
+        .preloader.fade-out { opacity:0; pointer-events:none; }
+        .preloader-spinner { width:36px; height:36px; border:3px solid #2a2a2a; border-top-color:#c47a8a; border-radius:50%; animation:spin 0.8s linear infinite; }
+        .preloader-text { color:#8a8080; font-size:0.9rem; letter-spacing:0.05em; }
+        @keyframes spin { to { transform:rotate(360deg); } }
     </style>
 
     <div class="container">
-        <?php include __DIR__ . '/../partials/_nav.php'; ?>
+        <?php admin_nav('dashboard'); ?>
         <div class="toast-container" id="toastContainer"></div>
 
-        <!-- ═══ CARDS RESUMEN ═══ -->
         <div class="grid">
             <div class="card">
                 <div class="card-value"><?= $linkCount ?></div>
@@ -134,12 +112,11 @@ $flash = flash_get();
             </div>
         </div>
 
-        <!-- ═══ TOOLBAR: ACCIONES + REFRESH ═══ -->
         <div class="dash-toolbar">
-            <a href="links.php" class="btn btn-sm">+ Nuevo enlace</a>
-            <a href="export-csv.php" class="btn btn-sm btn-ghost">Exportar CSV</a>
+            <a href="<?= $base ?>admin/links" class="btn btn-sm">+ Nuevo enlace</a>
+            <a href="<?= $base ?>admin/export" class="btn btn-sm btn-ghost">Exportar CSV</a>
             <?php if ($testimonialPending > 0): ?>
-            <a href="testimonials.php" class="btn btn-sm btn-success"><?= $testimonialPending ?> pendiente<?= $testimonialPending > 1 ? 's' : '' ?></a>
+            <a href="<?= $base ?>admin/testimonials" class="btn btn-sm btn-success"><?= $testimonialPending ?> pendiente<?= $testimonialPending > 1 ? 's' : '' ?></a>
             <?php endif; ?>
             <div class="dash-toolbar-right">
                 <span class="auto-refresh-badge" id="refreshBadge">Auto-refresh: 30s</span>
@@ -147,7 +124,6 @@ $flash = flash_get();
             </div>
         </div>
 
-        <!-- ═══ TOP ENLACES (barras) ═══ -->
         <?php if (!empty($topLinks)): ?>
         <div class="section">
             <h2>Top enlaces por clics</h2>
@@ -164,12 +140,9 @@ $flash = flash_get();
         </div>
         <?php endif; ?>
 
-        <!-- ═══ HISTORIAL DE ACTIVIDAD ═══ -->
         <div class="section">
             <h2>Historial de actividad</h2>
-
-            <!-- Filtros -->
-            <form method="GET" class="filter-bar">
+            <form method="GET" class="filter-bar" action="<?= $base ?>admin/dashboard">
                 <div>
                     <label style="margin-top:0;margin-bottom:4px;font-size:0.8rem">Enlace</label>
                     <select name="filter_link">
@@ -185,7 +158,7 @@ $flash = flash_get();
                 </div>
                 <button type="submit" class="btn btn-sm">Filtrar</button>
                 <?php if ($filterLink !== '' || $filterDate !== ''): ?>
-                <a href="index.php" class="btn btn-sm btn-ghost">Limpiar</a>
+                <a href="<?= $base ?>admin/dashboard" class="btn btn-sm btn-ghost">Limpiar</a>
                 <?php endif; ?>
             </form>
 
@@ -208,7 +181,6 @@ $flash = flash_get();
                 </table>
                 </div>
 
-                <!-- Paginacion -->
                 <?php if ($totalPages > 1): ?>
                 <div class="pagination">
                     <a href="?page=<?= max(1, $page - 1) ?>&filter_link=<?= urlencode($filterLink) ?>&filter_date=<?= urlencode($filterDate) ?>" class="<?= $page <= 1 ? 'disabled' : '' ?>">&laquo;</a>
@@ -228,14 +200,13 @@ $flash = flash_get();
             <?php endif; ?>
         </div>
 
-        <!-- ═══ TUS ENLACES ═══ -->
         <div class="section">
             <h2>Tus enlaces</h2>
             <?php
             $linksList = $db->query("SELECT label, sort_order FROM links ORDER BY sort_order ASC")->fetchAll();
             if (empty($linksList)):
             ?>
-                <p class="empty">No hay enlaces. <a href="links.php" style="color:var(--accent)">Crea uno</a>.</p>
+                <p class="empty">No hay enlaces. <a href="<?= $base ?>admin/links" style="color:var(--accent)">Crea uno</a>.</p>
             <?php else: ?>
                 <ul style="list-style:none">
                     <?php foreach ($linksList as $l): ?>
@@ -250,14 +221,9 @@ $flash = flash_get();
     </div>
 
     <script>
-    // Countdown auto-refresh
     let countdown = 30;
     const badge = document.getElementById('refreshBadge');
-    setInterval(() => {
-        countdown--;
-        if (countdown <= 0) countdown = 30;
-        badge.textContent = 'Auto-refresh: ' + countdown + 's';
-    }, 1000);
+    setInterval(() => { countdown--; if (countdown <= 0) countdown = 30; badge.textContent = 'Auto-refresh: ' + countdown + 's'; }, 1000);
     </script>
     <script>
     <?php if ($flash): ?>

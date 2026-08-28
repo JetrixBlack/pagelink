@@ -46,7 +46,7 @@ function renderLinks(links) {
       ? `<span class="link-btn-subtitle">${link.subtitle}</span>`
       : '';
     return `
-      <a href="api/track-click.php?id=${link.id}" class="link-btn" target="_blank" rel="noopener" style="animation-delay: ${0.35 + i * 0.07}s">
+      <a href="api/track-click?id=${link.id}" class="link-btn" target="_blank" rel="noopener" style="animation-delay: ${0.35 + i * 0.07}s">
         <span class="link-btn-icon">${icon}</span>
         <span class="link-btn-text">
           <span class="link-btn-title">${link.label}</span>
@@ -70,7 +70,7 @@ function handleFetchError(area) {
   };
 }
 
-fetch('api/get-profile.php')
+fetch('api/get-profile')
   .then(r => { if (!r.ok) throw Error('HTTP ' + r.status); return r.json(); })
   .then(profile => {
     document.getElementById('displayName').textContent = profile.name;
@@ -79,18 +79,18 @@ fetch('api/get-profile.php')
       const img = document.getElementById('heroAvatar');
       img.src = profile.avatar;
       img.onerror = () => {
-        img.src = 'api/avatar-fallback.php?name=' + encodeURIComponent(profile.name);
+        img.src = 'api/avatar-fallback?name=' + encodeURIComponent(profile.name);
       };
     }
   })
   .catch(handleFetchError('perfil'));
 
-fetch('api/get-links.php')
+fetch('api/get-links')
   .then(r => { if (!r.ok) throw Error('HTTP ' + r.status); return r.json(); })
   .then(links => renderLinks(links))
   .catch(handleFetchError('links'));
 
-fetch('api/get-testimonials.php')
+fetch('api/get-testimonials')
   .then(r => { if (!r.ok) throw Error('HTTP ' + r.status); return r.json(); })
   .then(testimonials => {
     const container = document.getElementById('testimonialsContainer');
@@ -196,7 +196,7 @@ document.getElementById('commentForm')?.addEventListener('submit', function(e) {
   alert.style.display = 'none';
   alert.className = 'comment-alert';
 
-  fetch('api/submit-testimonial.php', {
+  fetch('api/submit-testimonial', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)

@@ -47,3 +47,6 @@ composer.lock
 *.bak
 *.backup
 backups/
+
+.vercel
+.env*

@@ -1,0 +1,25 @@
+# PageLink - Excluye de Vercel lo que no debe subirse
+
+# Base de datos SQLite local (datos de desarrollo, no serverless)
+database.sqlite
+database.sqlite-journal
+database.sqlite-wal
+database.sqlite-shm
+
+# Imagenes de perfil por defecto (avatar + portada) se suben como estaticos.
+# Los uploads nuevos en produccion usan Vercel Blob (no esta carpeta).
+uploads/default.jpg
+# Configuracion y temporales de Vercel
+.vercel
+.env.local
+.env
+.env.*
+!.env.example
+
+# Dependencias administradas por la plataforma
+node_modules
+
+# Archivos del sistema
+.git
+.DS_Store
+Thumbs.db

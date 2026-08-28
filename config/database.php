@@ -14,12 +14,8 @@ define('IS_VERCEL', !empty(getenv('VERCEL')) || !empty($_ENV['VERCEL']));
 // Ruta al SQLite local (solo se usa en desarrollo)
 $DB_PATH = __DIR__ . '/../database.sqlite';
 
-// ─── Obtiene la URL base del proyecto ────────────────────────────────────────
-function base_url(): string {
-    $script = $_SERVER['SCRIPT_NAME'] ?? '/';
-    $dir = dirname($script);
-    return $dir === '/' || $dir === '\\' ? '' : $dir;
-}
+// base_url(), base_path(), asset_version(), redirect() y ROOT_PATH se
+// definen en app/helpers.php (se cargan al final de este archivo).
 
 // ─── Conexión a base de datos (modo automático) ───────────────────────────────
 /**
@@ -29,7 +25,7 @@ function base_url(): string {
  *
  * Ambas implementan la misma interfaz (query, exec, prepare, etc.)
  */
-function getDB(): PDO|object {
+function getDB(): object {
     static $connection = null;
 
     if ($connection === null) {
@@ -103,11 +99,18 @@ function check_session_timeout(): void {
         $lastActivity = $_SESSION['last_activity'] ?? 0;
         if ($lastActivity > 0 && (time() - $lastActivity) > SESSION_TIMEOUT) {
             session_destroy();
-            $currentDir = dirname($_SERVER['SCRIPT_NAME']);
-            header('Location: ' . $currentDir . '/session-expired.php');
+            // En modo Vercel se usa el route limpio; en local tambien, para
+            // mantener consistencia con el front controller.
+            $base = base_url();
+            header('Location: ' . $base . '/admin/session-expired');
             exit;
         }
         // Actualizar timestamp de última actividad
         $_SESSION['last_activity'] = time();
     }
 }
+
+// Helpers compartidos: base_url(), base_path(), asset_version(), redirect(),
+// ROOT_PATH. Se cargan aqui para que esten disponibles siempre que se use
+// database.php (tanto en el front controller como en las vistas).
+require_once __DIR__ . '/../app/helpers.php';
