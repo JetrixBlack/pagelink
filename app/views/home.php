@@ -44,28 +44,17 @@ if ($metaCover !== '' && !preg_match('#^https?://#', $metaCover)) {
 
   <title><?= htmlspecialchars($p['name'] ?? 'Pagelink') ?></title>
   <link rel="stylesheet" href="<?= base_path() ?>assets/css/style.css?v=<?= asset_version('assets/css/style.css') ?>">
-  <style>
-    .preloader { position:fixed; inset:0; z-index:10000; background:#0f0f0f; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; transition:opacity 0.4s; }
-    .preloader.fade-out { opacity:0; pointer-events:none; }
-    .preloader-spinner { width:36px; height:36px; border:3px solid #2a2a2a; border-top-color:#c47a8a; border-radius:50%; animation:spin 0.8s linear infinite; }
-    .preloader-text { color:#8a8080; font-size:0.9rem; letter-spacing:0.05em; }
-    @keyframes spin { to { transform:rotate(360deg); } }
-  </style>
 </head>
 <body>
-  <div class="preloader" id="preloader">
-    <div class="preloader-spinner"></div>
-    <div class="preloader-text">Cargando...</div>
-  </div>
   <div class="container">
 
     <div class="hero">
       <?php if ($coverUrl): ?>
-      <img class="hero-cover" src="<?= htmlspecialchars($coverUrl) ?>" alt="Cover" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+      <img class="hero-cover" src="<?= htmlspecialchars($coverUrl) ?>" alt="Cover" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
       <?php endif; ?>
       <div class="hero-cover-fallback"<?= $coverUrl ? ' style="display:none"' : '' ?>></div>
       <div class="hero-avatar-wrapper">
-        <img class="hero-avatar" id="heroAvatar" alt="<?= htmlspecialchars($p['name'] ?? '') ?>">
+        <img class="hero-avatar" id="heroAvatar" src="<?= htmlspecialchars($avatarUrl) ?>" alt="<?= htmlspecialchars($p['name'] ?? '') ?>">
       </div>
       <div class="hero-name" id="displayName"><?= htmlspecialchars($p['name'] ?? '') ?></div>
     </div>
@@ -112,24 +101,5 @@ if ($metaCover !== '' && !preg_match('#^https?://#', $metaCover)) {
   </div>
 
   <script src="<?= base_path() ?>assets/js/script.js?v=<?= asset_version('assets/js/script.js') ?>"></script>
-  <script>
-  // Ocultar el preloader de forma robusta: se quita en DOMContentLoaded y,
-  // como respaldo, siempre a los 2 segundos (aunque una imagen externa como
-  // picsum.photos se cuelgue y retrase el evento 'load').
-  function hidePreloader() {
-    var p = document.getElementById('preloader');
-    if (p) {
-      p.classList.add('fade-out');
-      setTimeout(function() { if (p && p.parentNode) p.remove(); }, 400);
-    }
-  }
-  if (document.readyState === 'complete') {
-    hidePreloader();
-  } else {
-    document.addEventListener('DOMContentLoaded', hidePreloader);
-    window.addEventListener('load', hidePreloader);
-  }
-  setTimeout(hidePreloader, 2000);
-  </script>
 </body>
 </html>
