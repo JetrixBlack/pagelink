@@ -67,7 +67,7 @@ $title = 'Política de Privacidad';
     <p>No se utilizan datos para publicidad ni se ceden a terceros.</p>
 
     <h2>4. Base legal</h2>
-    <p>El tratamiento se ampara en el <strong>artículo 20 de la Constitución de la República Bolivariana de Venezuela</strong> y la <strong>Ley Orgánica de Protección de Datos Personales (LOPDP)</strong>.</p>
+    <p>El tratamiento se ampara en los <strong>artículos 28 y 60 de la Constitución de la República Bolivariana de Venezuela</strong>: el derecho de acceso a los datos propios (hábeas data, art. 28) y el derecho a la protección del honor, vida privada, intimidad, propia imagen, confidencialidad y reputación (art. 60), según el desarrollo jurisprudencial de la Sala Constitucional del Tribunal Supremo de Justicia.</p>
 
     <h2>5. Conservación de los datos</h2>
     <p>Los datos se conservan mientras la cuenta esté activa y por el tiempo necesario para cumplir obligaciones legales. A solicitud del usuario, los datos se suprimen o anonimizan.</p>

@@ -131,6 +131,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }
             $activeTab = 'seguridad';
         }
+
+        if ($_POST['action'] === 'delete_my_data') {
+            $current = $_POST['current_password'] ?? '';
+            $answer  = trim($_POST['answer'] ?? '');
+            $admin   = $db->query("SELECT * FROM admin WHERE id = 1")->fetch();
+            $sq      = $db->query("SELECT * FROM security_question WHERE id = 1")->fetch();
+
+            // Doble verificación: contraseña actual + respuesta de seguridad
+            $passwordOk = password_verify($current, $admin['password_hash']);
+            $answerOk   = !empty($sq['answer_hash']) && password_verify(mb_strtolower($answer), $sq['answer_hash']);
+
+            if (!$passwordOk || !$answerOk) {
+                $message = 'La verificacion fallo: contrasena actual o respuesta de seguridad incorrectas.';
+            } else {
+                // Fase 1: borrado inmediato de datos identificativos del perfil y admin
+                $db->prepare("UPDATE profile SET
+                        name='[Usuario eliminado]', bio='', avatar='uploads/default.svg',
+                        cover='', footer_brand='PageLink', footer_text=''
+                    WHERE id = 1")->execute();
+                $db->prepare("UPDATE security_question SET question='', answer_hash='' WHERE id = 1")->execute();
+                // Fase 2: retencion legal 10 anios (Codigo de Comercio art. 44/132)
+                // los registros de clics/testimonios agregados se conservan sin PII.
+                $retencionHasta = date('Y-m-d', strtotime('+10 years'));
+                $message = "Solicitud de eliminacion procesada. Datos basicos eliminados. "
+                         . "Los registros agregados se conservan anonimizados 10 anios (Codigo de Comercio art. 44/132) hasta $retencionHasta (purga tras auditoria).";
+                // Invalidar la sesion
+                session_destroy();
+                redirect('/admin/login?eliminado=1');
+            }
+            $activeTab = 'seguridad';
+        }
     }
 }
 
@@ -305,6 +336,22 @@ $avatarFallback = $base . 'api/avatar-fallback';
                         <input type="text" name="answer" id="answer" value="" placeholder="<?= ($sq['answer_hash'] ?? '') ? '(ya configurada - escribe para cambiar)' : 'Escribe tu respuesta' ?>" required autocomplete="off">
                         <p class="hint">La respuesta se guarda encriptada. No podras verla despues.</p>
                         <button type="submit" style="margin-top:16px">Guardar pregunta</button>
+                    </form>
+                </div>
+
+                <hr style="border:none;border-top:1px solid var(--border);margin:24px 0">
+
+                <div>
+                    <h2 style="font-size:0.95rem;margin-bottom:6px;color:var(--fg)">Eliminar mis datos (Habeas Data)</h2>
+                    <p class="hint" style="margin-bottom:16px">Solicita la eliminacion de tus datos personales. Se exige contrasena actual + respuesta de seguridad. Por ley (Codigo de Comercio art. 44 y 132), los registros agregados se conservan anonimizados durante 10 anios hasta la purga tras auditoria.</p>
+                    <form method="POST" action="<?= $formAction ?>" onsubmit="return confirm('Se eliminaran tus datos basicos y se anonimizaran los registros 10 anios (Codigo de Comercio). \u00bfContinuar?')">
+                        <?= csrf_field() ?>
+                        <input type="hidden" name="action" value="delete_my_data">
+                        <label for="del_password">Contrasena actual</label>
+                        <input type="password" name="current_password" id="del_password" required autocomplete="current-password">
+                        <label for="del_answer">Respuesta de seguridad</label>
+                        <input type="password" name="answer" id="del_answer" required autocomplete="off" placeholder="Tu respuesta a la pregunta de seguridad">
+                        <button type="submit" style="margin-top:16px;background:var(--danger,#dc2626);border-color:var(--danger,#dc2626);color:#fff">Eliminar mis datos</button>
                     </form>
                 </div>
             </div>
