@@ -96,6 +96,7 @@ if ($metaCover !== '' && !preg_match('#^https?://#', $metaCover)) {
       <span class="footer-brand"><?= htmlspecialchars($p['footer_brand'] ?? 'Pagelink') ?></span>
       <span class="footer-text"><?= htmlspecialchars($p['footer_text'] ?? '') ?></span>
       <span class="footer-year">&copy; <?= date('Y') ?></span>
+      <span class="footer-legal"><a href="<?= base_path() ?>privacidad">Política de Privacidad</a></span>
     </footer>
 
   </div>

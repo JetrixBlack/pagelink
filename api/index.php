@@ -79,6 +79,11 @@ if ($route === 'setup') {
     exit;
 }
 
+if ($route === 'privacidad') {
+    require_once __DIR__ . '/../app/views/privacidad.php';
+    exit;
+}
+
 // -- Rutas admin -----------------------------------------------------------
 require_once __DIR__ . '/../app/auth.php';
 

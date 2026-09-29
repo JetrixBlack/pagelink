@@ -4,6 +4,17 @@
 
 PageLink es una pagina tipo Linktree con backend **PHP serverless (front controller)** sobre **Turso (libSQL)** en la nube: panel admin, tracking de clics, CRUD de enlaces y testimonios, subida de avatar/portada, recuperacion de contrasena por pregunta de seguridad, historial de actividad paginado, carrusel de testimonios y mas.
 
+> 🤖 **Este proyecto fue desarrollado con asistencia de inteligencia artificial** (OpenCode + Claude) en su diseno, implementacion, testing y documentacion, con supervision y decisiones del humano a cargo.
+
+## Herramientas y servicios integrados
+
+| Herramienta | Uso |
+|-------------|-----|
+| **Vercel** (`vercel-php@0.7.2`) | Hosting y despliegue serverless (front controller `api/index.php`) |
+| **Turso (libSQL)** | Base de datos en la nube (perfil, enlaces, clics, testimonios, admin) |
+| **PHP nativo (PDO)** | Acceso a base de datos y lógica del backend |
+| **CSS/JS propios** (`assets/css/style.css`, `assets/js/*.js`) | Interfaz sin frameworks de UI |
+
 ## Demo en produccion
 
 | Recurso | URL |
